@@ -101,7 +101,58 @@ app.post("/add-event", async (req, res) => {
   }
 });
 
-// Start the server
+// API endpoint to edit an event
+app.put("/edit-event", async (req, res) => {
+  try {
+    const { eventId, summary, description, startDateTime, endDateTime } =
+      req.body;
+
+    // Create the event object
+    const event = {
+      id: eventId,
+      summary,
+      description,
+      start: {
+        dateTime: startDateTime,
+        timeZone: "Europe/London",
+      },
+      end: {
+        dateTime: endDateTime,
+        timeZone: "Europe/London",
+      },
+    };
+
+    // Update the event in the calendar
+    const updatedEvent = await calendar.events.update({
+      calendarId: process.env.CALENDAR_ID,
+      eventId,
+      resource: event,
+    });
+
+    res.json(updatedEvent.data);
+  } catch (err) {
+    console.error("Error editing event:", err);
+    res.status(500).json({ error: "Failed to edit event" });
+  }
+});
+
+// API endpoint to delete an event
+app.delete("/delete-event", async (req, res) => {
+  try {
+    const eventId = req.body.eventId;
+
+    // Delete the event from the calendar
+    const deletedEvent = await calendar.events.delete({
+      calendarId: process.env.CALENDAR_ID,
+      eventId,
+    });
+
+    res.json(deletedEvent.data);
+  } catch (err) {
+    console.error("Error deleting event:", err);
+    res.status(500).json({ error: "Failed to delete event" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
