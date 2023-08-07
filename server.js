@@ -157,6 +157,63 @@ app.delete("/delete-event", async (req, res) => {
   }
 });
 
+// GET all menus
+app.get("/menus", async (req, res) => {
+  try {
+    const menus = await Menu.find();
+    res.json(menus);
+  } catch (err) {
+    console.error("Error getting menus:", err);
+    res.status(500).json({ error: "Failed to get menus" });
+  }
+});
+
+// GET menu by ID
+app.get("/menus/:id", async (req, res) => {
+  try {
+    const menu = await Menu.findById(req.params.id);
+    res.json(menu);
+  } catch (err) {
+    console.error("Error getting menu:", err);
+    res.status(500).json({ error: "Failed to get menu" });
+  }
+});
+
+// POST create a new menu
+app.post("/menus", async (req, res) => {
+  try {
+    const newMenu = await Menu.create(req.body);
+    res.json(newMenu);
+  } catch (err) {
+    console.error("Error creating menu:", err);
+    res.status(500).json({ error: "Failed to create menu" });
+  }
+});
+
+// PUT update a menu
+app.put("/menus/:id", async (req, res) => {
+  try {
+    const updatedMenu = await Menu.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json(updatedMenu);
+  } catch (err) {
+    console.error("Error updating menu:", err);
+    res.status(500).json({ error: "Failed to update menu" });
+  }
+});
+
+// DELETE delete a menu
+app.delete("/menus/:id", async (req, res) => {
+  try {
+    await Menu.findByIdAndDelete(req.params.id);
+    res.json({ message: "Menu deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting menu:", err);
+    res.status(500).json({ error: "Failed to delete menu" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
