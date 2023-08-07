@@ -3,13 +3,16 @@ const cors = require("cors");
 require("dotenv").config();
 const { google } = require("googleapis");
 const axios = require("axios");
+const mongoose = require("mongoose");
+const bp = require("body-parser");
+const Menu = require("./models/menu");
+mongoose.connect(process.env.DATABASE_URL);
 
 const port = process.env.PORT || 8086;
 
 const app = express();
-
 app.use(cors());
-app.use(express.json());
+app.use(bp.json());
 
 const key = require("./credentials.json");
 
