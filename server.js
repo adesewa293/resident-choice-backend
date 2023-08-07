@@ -14,7 +14,13 @@ const app = express();
 app.use(cors());
 app.use(bp.json());
 
-const key = require("./credentials.json");
+let key;
+if (process.env.GOOGLE_CREDENTIALS_JSON) {
+  key = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+} else {
+  key = require("./credentials.json");
+}
+
 
 const jwtClient = new google.auth.JWT(
   key.client_email,
