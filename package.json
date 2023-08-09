@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@emailjs/browser": "^3.11.0",
     "@googleapis/calendar": "^9.1.0",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",

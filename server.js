@@ -21,7 +21,6 @@ if (process.env.GOOGLE_CREDENTIALS_JSON) {
   key = require("./credentials.json");
 }
 
-
 const jwtClient = new google.auth.JWT(
   key.client_email,
   null,
@@ -76,6 +75,36 @@ app.get("/get-week-events", async (req, res) => {
     console.error("Error getting week events:", err);
     res.status(500).json({ error: "Failed to get week events" });
   }
+});
+
+const getAttachmentUrl = async (eventId) => {
+  const calendar = google.calendar({
+    version: "v3",
+    auth: jwtClient,
+  });
+
+  const event = await calendar.events.get({
+    calendarId: process.env.CALENDAR_ID,
+    eventId,
+  });
+
+  const attachmentUrl = event.data.attachments[0].fileUrl;
+
+  const response = await axios.get(attachmentUrl);
+
+  if (response.status === 200) {
+    return response.data;
+  } else {
+    throw new Error("Failed to get attachment");
+  }
+};
+
+app.get("/get-attachment", async (req, res) => {
+  const eventId = req.query.eventId;
+
+  const imageData = await getAttachmentUrl(eventId);
+
+  res.json(imageData);
 });
 
 // API endpoint to add an event to the calendar
@@ -217,6 +246,35 @@ app.delete("/menus/:id", async (req, res) => {
   } catch (err) {
     console.error("Error deleting menu:", err);
     res.status(500).json({ error: "Failed to delete menu" });
+  }
+});
+// POST vote up for a menu
+app.post("/menus/:id/voteup", async (req, res) => {
+  try {
+    const menu = await Menu.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { voteup: 1 } },
+      { new: true }
+    );
+    res.json(menu);
+  } catch (err) {
+    console.error("Error voting up:", err);
+    res.status(500).json({ error: "Failed to vote up" });
+  }
+});
+
+// POST vote down for a menu
+app.post("/menus/:id/votedown", async (req, res) => {
+  try {
+    const menu = await Menu.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { votedown: 1 } },
+      { new: true }
+    );
+    res.json(menu);
+  } catch (err) {
+    console.error("Error voting down:", err);
+    res.status(500).json({ error: "Failed to vote down" });
   }
 });
 
