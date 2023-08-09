@@ -11,6 +11,8 @@ const menuSchema = new Schema({
   side_1: String,
   side_2: String,
   desert_1: String,
+  voteup: { type: Number, default: 0 },
+  votedown: { type: Number, default: 0 },
 });
 
 const Menu = mongoose.model("Menu", menuSchema);
