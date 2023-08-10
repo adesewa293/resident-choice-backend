@@ -46,26 +46,18 @@ const calendar = google.calendar({
   auth: jwtClient,
 });
 
-// API endpoint to show the week's events
+// API endpoint to show the events for the next 7 days
 app.get("/get-week-events", async (req, res) => {
   try {
-    // Get the current week
-    const now = new Date();
-    const startOfWeek = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - now.getDay() + 1
-    );
-    const endOfWeek = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 6 - now.getDay()
-    );
+    // Calculate start and end dates for the next 7 days
+    const today = new Date();
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + 7);
 
-    // Get the events for the current week
+    // Get the events for the next 7 days
     const events = await calendar.events.list({
       calendarId: process.env.CALENDAR_ID,
-      timeMin: startOfWeek.toISOString(),
+      timeMin: today.toISOString(),
       timeMax: endOfWeek.toISOString(),
     });
 
